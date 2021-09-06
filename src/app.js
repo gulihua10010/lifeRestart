@@ -56,7 +56,17 @@ class App{
 
         indexPage
             .find('#restart')
-            .click(()=>this.switch('talent'));
+            .click(()=>{
+                const username = localStorage.getItem('theme');
+                if (!username) {
+                    console.log(1)
+                    this.switch('inputUser')
+                }else {
+                    console.log(1)
+                    this.switch('talent');
+                }
+
+            });
 
         indexPage
             .find('#rank')
@@ -77,12 +87,37 @@ class App{
         // Talent
         const talentPage = $(`
         <div id="main">
-            <div class="head" style="font-size: 1.6rem">天赋抽卡</div>
+            <div class="head" style="font-size: 1.6rem">天赋抽卡1</div>
             <button id="random" class="mainbtn" style="top: 50%;">10连抽！</button>
             <ul id="talents" class="selectlist"></ul>
             <button id="next" class="mainbtn" style="top:auto; bottom:0.1em">请选择3个</button>
         </div>
         `);
+
+        // input
+        const inputUser = $(`
+        <div id="main">
+            <div class="" style="font-size: 1.6rem">
+               <label for="username">请输入用户名:</label>
+               <input id="username" type="text" class="text-input" autocomplete="off"> 
+               <button id="user-next" class="mainbtn" style="top:auto; bottom:0.1em">下一步</button>
+            </div> 
+        </div>
+        `);
+
+        inputUser
+            .find('#user-next')
+            .click(()=>{
+                var username = inputUser.find('#username').val();
+                if (!username)
+                {
+                    this.hint('请输入用户名!');
+                }else {
+                    localStorage.setItem('username', username);
+                    this.switch('talent')
+                }
+
+            });
 
         const createTalent = ({ grade, name, description }) => {
             return $(`<li class="grade${grade}b">${name}（${description}）</li>`)
@@ -101,9 +136,6 @@ class App{
                             if(li.hasClass('selected')) {
                                 li.removeClass('selected')
                                 this.#talentSelected.delete(talent);
-                                if(this.#talentSelected.size<3) {
-                                    talentPage.find('#next').text('请选择3个')
-                                }
                             } else {
                                 if(this.#talentSelected.size==3) {
                                     this.hint('只能选3个天赋');
@@ -125,9 +157,6 @@ class App{
                                 }
                                 li.addClass('selected');
                                 this.#talentSelected.add(talent);
-                                if(this.#talentSelected.size==3) {
-                                    talentPage.find('#next').text('开始新人生')
-                                }
                             }
                         });
                     });
@@ -145,28 +174,18 @@ class App{
             })
 
         // Property
-        // hint of extension tobermory.es6-string-html
-        const propertyPage = $(/*html*/`
+        const propertyPage = $(`
         <div id="main">
             <div class="head" style="font-size: 1.6rem">
                 调整初始属性<br>
                 <div id="total" style="font-size:1rem; font-weight:normal;">可用属性点：0</div>
             </div>
             <ul id="propertyAllocation" class="propinitial"></ul>
-            <ul class="selectlist" id="talentSelectedView" style="top:calc(100% - 17rem); bottom:7rem"></ul>
-            <button id="random" class="mainbtn" style="top:auto; bottom:0.1rem; left:auto; right:50%; transform: translate(-2rem,-50%);">随机分配</button>
-            <button id="start" class="mainbtn" style="top:auto; bottom:0.1rem; left:50%; right:auto; transform: translate(2rem,-50%);">开始新人生</button>
+            <button id="random" class="mainbtn" style="top:auto; bottom:7rem">随机分配</button>
+            <button id="start" class="mainbtn" style="top:auto; bottom:0.1rem">开始新人生</button>
         </div>
         `);
-        propertyPage.mounted = ()=>{
-            propertyPage
-            .find('#talentSelectedView').append(
-                `<li>已选天赋</li>` +
-                Array.from(this.#talentSelected)
-                .map(({name,description})=>`<li class="grade0b">${name}(${description})</li>`)
-                .join('')
-            )
-        }
+
         const groups = {};
         const total = ()=>{
             let t = 0;
@@ -319,9 +338,9 @@ class App{
                     // Update properties if not die yet
                     const property = this.#life.getLastRecord();
                     $("#lifeProperty").html(`
-                    <li>颜值：${property.CHR} </li>
-                    <li>智力：${property.INT} </li>
-                    <li>体质：${property.STR} </li>
+                    <li>颜值：${property.CHR} </li> 
+                    <li>智力：${property.INT} </li> 
+                    <li>体质：${property.STR} </li> 
                     <li>家境：${property.MNY} </li>
                     <li>快乐：${property.SPR} </li>`);
                 }
@@ -393,6 +412,12 @@ class App{
                     cnt.hide();
                 },
             },
+            inputUser: {
+                page: inputUser,
+                clear: ()=>{
+                    inputUser.find('#username').val('');
+                },
+            },
             talent: {
                 page: talentPage,
                 clear: ()=>{
@@ -405,9 +430,6 @@ class App{
                 page: propertyPage,
                 clear: ()=>{
                     freshTotal();
-                    propertyPage
-                        .find('#talentSelectedView')
-                        .empty();
                 },
             },
             trajectory: {
@@ -497,9 +519,6 @@ class App{
         $('#main').detach();
         p.clear();
         p.page.appendTo('body');
-        if(typeof p.page.mounted === 'function'){
-            p.page.mounted()
-        }
     }
 
     hint(message, type='info') {

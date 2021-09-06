@@ -1,23 +1,25 @@
 {
-    "name": "xlsx_transform",
-    "type": "module",
-    "bin": "test/index.js",
-    "scripts": {
-        "test": "node test",
-        "xlsxTransform": "node utils/xlsxTransform.js data",
-        "dev": "webpack serve --open /view/index.html",
-        "build": "webpack --mode production"
-    },
-    "dependencies": {
-        "@babel/core": "^7.15.4",
-        "@babel/preset-env": "^7.15.4",
-        "babel-loader": "^8.2.2",
-        "core-js": "^3.17.2",
-        "webpack": "^5.51.2",
-        "webpack-dev-server": "^4.1.0",
-        "xlsx": "^0.17.0"
-    },
-    "devDependencies": {
-        "webpack-cli": "^4.8.0"
-    }
+  "name": "xlsx_transform",
+  "type": "module",
+  "bin": "test/index.js",
+  "scripts": {
+    "test": "node test",
+    "xlsxTransform": "node utils/xlsxTransform.js data",
+    "dev": "webpack serve --open /view/index.html",
+    "build": "webpack --watch --mode production ",
+    "debug": "webpack-dev-server --hot"
+  },
+  "dependencies": {
+    "@babel/core": "^7.15.4",
+    "@babel/preset-env": "^7.15.4",
+    "babel-loader": "^8.2.2",
+    "core-js": "^3.17.2",
+    "webpack": "^5.51.2",
+    "webpack-dev-server": "^4.1.0",
+    "html-webpack-plugin": "^2.30.1",
+    "xlsx": "^0.17.0"
+  },
+  "devDependencies": {
+    "webpack-cli": "^4.8.0"
+  }
 }
